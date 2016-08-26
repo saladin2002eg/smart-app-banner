@@ -95,6 +95,12 @@ var SmartBanner = function(options) {
 
 SmartBanner.prototype = {
 	constructor: SmartBanner,
+	timers: [],
+	clearTimers: function() {
+		this.timers.map(clearTimeout);
+      this.timers = [];
+		console.log("clearing");
+	},
 
 	create: function() {
 		var inStore = this.options.price[this.type] + ' - ' + this.options.store[this.type];
@@ -143,6 +149,11 @@ SmartBanner.prototype = {
 		q('.smartbanner-button', sb).addEventListener('click', this.install.bind(this), false);
 		q('.smartbanner-close', sb).addEventListener('click', this.close.bind(this), false);
 
+		// events for opening up apps.
+		console.log("adding listeners");
+		window.addEventListener("pagehide", this.clearTimers.bind(this));
+		window.addEventListener("blur", this.clearTimers.bind(this));
+		window.addEventListener("beforeunload", this.clearTimers.bind(this));
 	},
 	hide: function() {
 		root.classList.remove('smartbanner-show');
@@ -170,26 +181,29 @@ SmartBanner.prototype = {
 	openOrInstall: function() {
 		var url = this.parseUrl();
 		var appStoreUrl = this.getStoreLink();
-		var time = new Date().getTime();
 		if(url) {
-			var timeout = setTimeout(function(){
-				var currentTime = new Date().getTime();
-				if(currentTime - time < 700) {
-					location.href = appStoreUrl;
-				}
-			}, 500);
+			this.timers.push(setTimeout(function(){
+				console.log("go to appstore");
+				window.top.location = appStoreUrl;
+			}, 500));
 
-			var iframe = doc.createElement('iframe');
-			iframe.src = url;
-			iframe.frameborder = 0;
-			iframe.style.width = "1px";
-			iframe.style.height = "1px";
-			iframe.style.position = "absolute";
-			iframe.style.top = "-100px";
-			iframe.onload = function() {
-				clearTimeout(timeout);
-			};
-			doc.body.appendChild(iframe);
+			if(this.type === 'ios') {
+				this.timers.push(setTimeout(function(){
+					window.location = url;
+				}, 0));
+			} else {
+				var iframe = doc.createElement('iframe');
+				iframe.src = url;
+				iframe.frameborder = 0;
+				iframe.style.width = "1px";
+				iframe.style.height = "1px";
+				iframe.style.position = "absolute";
+				iframe.style.top = "-100px";
+				iframe.onload = function() {
+					this.clearTimers();
+				}.bind(this);
+				doc.body.appendChild(iframe);
+			}
 		} else {
 			location.href = appStoreUrl;
 		}
