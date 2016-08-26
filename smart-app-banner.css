@@ -144,8 +144,8 @@
 
 .smartbanner-ios .smartbanner-button:active,
 .smartbanner-ios .smartbanner-button:hover {
-	background: #dcdcdc;
-	background: linear-gradient(to bottom, #dcdcdc, #efefef);
+	border: 1px solid rgb(72, 82, 88);
+	background: #fcb200;
 }
 
 .smartbanner-ios .smartbanner-button-text {

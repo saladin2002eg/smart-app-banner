@@ -44,6 +44,8 @@ var SmartBanner = function(options) {
 		daysReminder: 90,
 		appStoreLanguage: userLang, // Language code for App Store
 		button: 'OPEN', // Text for the install button
+		buttonInstall: 'INSTALL',
+		deepLink: null,
 		store: {
 			ios: 'On the App Store',
 			android: 'In Google Play',
@@ -96,10 +98,17 @@ var SmartBanner = function(options) {
 SmartBanner.prototype = {
 	constructor: SmartBanner,
 	timers: [],
+	showsInstall: false,
+	button: null,
 	clearTimers: function() {
 		this.timers.map(clearTimeout);
       this.timers = [];
 		console.log("clearing");
+
+		if(this.showsInstall) {
+			this.showsInstall = false;
+			q(".smartbanner-button-text", this.button).innerText = this.options.button;
+		}
 	},
 
 	create: function() {
@@ -146,7 +155,9 @@ SmartBanner.prototype = {
 			});
 		}
 
-		q('.smartbanner-button', sb).addEventListener('click', this.install.bind(this), false);
+		this.button = q('.smartbanner-button', sb);
+
+		this.button.addEventListener('click', this.install.bind(this), false);
 		q('.smartbanner-close', sb).addEventListener('click', this.close.bind(this), false);
 
 		// events for opening up apps.
@@ -171,26 +182,43 @@ SmartBanner.prototype = {
 	install: function() {
 		this.openOrInstall();
 
-		this.hide();
+		if(this.iOSversion() < 9) {
+			this.hide();
+		}
 		cookie.set('smartbanner-installed', 'true', {
 			path: '/',
 			expires: new Date(+new Date() + this.options.daysReminder * 1000 * 60 * 60 * 24)
 		});
 		return false;
 	},
+	iOSversion: function() {
+  		if (/iP(hone|od|ad)/.test(navigator.platform)) {
+	    // supports iOS 2.0 and later: <http://bit.ly/TJjs1V>
+	    var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+	    return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+	  }
+
+	  return -1;
+  	},
 	openOrInstall: function() {
 		var url = this.parseUrl();
 		var appStoreUrl = this.getStoreLink();
-		if(url) {
+		if(url && !this.showsInstall) {
 			this.timers.push(setTimeout(function(){
-				console.log("go to appstore");
-				window.top.location = appStoreUrl;
-			}, 500));
+				if(this.iOSversion() < 9) {
+					console.log("go to appstore");
+					window.top.location = appStoreUrl;
+				} else if(this.options.deepLink != null) {
+					window.location = this.deepLink + escape(url);
+				} else {
+					console.log("change button");
+					this.showsInstall = true;
+					q(".smartbanner-button-text", this.button).innerText = this.options.buttonInstall;
+				}
+			}.bind(this), 500));
 
 			if(this.type === 'ios') {
-				this.timers.push(setTimeout(function(){
-					window.location = url;
-				}, 0));
+				window.location = url;
 			} else {
 				var iframe = doc.createElement('iframe');
 				iframe.src = url;
