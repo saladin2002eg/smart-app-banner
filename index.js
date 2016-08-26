@@ -12,8 +12,8 @@ var userLang = userLangAttribute.slice(-2) || 'us';
 // platform dependent functionality
 var mixins = {
 	ios: {
-		appMeta: 'apple-itunes-app',
-		urlMeta: 'apple-itunes-app',
+		appMeta: 'dw-itunes-app',
+		urlMeta: 'dw-itunes-app',
 		iconRels: ['apple-touch-icon-precomposed', 'apple-touch-icon'],
 		getStoreLink: function() {
 			return 'https://itunes.apple.com/' + this.options.appStoreLanguage + '/app/id' + this.appId;
@@ -75,7 +75,7 @@ var SmartBanner = function(options) {
 	// - running on standalone mode
 	// - user dismissed banner
 	if (!this.type
-		|| ( this.type === 'ios' && agent.browser.name === 'Mobile Safari' && parseInt(agent.os.version) >= 6 )
+		/*|| ( this.type === 'ios' && agent.browser.name === 'Mobile Safari' && parseInt(agent.os.version) >= 6 )*/
 		|| navigator.standalone
 		|| cookie.get('smartbanner-closed') && this.daysHidden > 0
 		|| cookie.get('smartbanner-installed') && this.daysReminder > 0) {
