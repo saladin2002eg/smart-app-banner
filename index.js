@@ -204,10 +204,12 @@ SmartBanner.prototype = {
 		var url = this.parseUrl();
 		var appStoreUrl = this.getStoreLink();
 		if(url && !this.showsInstall) {
+			var time = new Date().getTime();
 			this.timers.push(setTimeout(function(){
 				if(this.iOSversion() < 9) {
-					console.log("go to appstore");
-					window.top.location = appStoreUrl;
+					if((new Date().getTime()) - time < 1000) {
+						window.top.location = appStoreUrl;
+					}
 				} else if(this.options.deepLink != null) {
 					window.location = this.deepLink + escape(url);
 				} else {
@@ -227,9 +229,6 @@ SmartBanner.prototype = {
 				iframe.style.height = "1px";
 				iframe.style.position = "absolute";
 				iframe.style.top = "-100px";
-				iframe.onload = function() {
-					this.clearTimers();
-				}.bind(this);
 				doc.body.appendChild(iframe);
 			}
 		} else {
