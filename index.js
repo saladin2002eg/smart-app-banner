@@ -45,7 +45,8 @@ var SmartBanner = function(options) {
 		appStoreLanguage: userLang, // Language code for App Store
 		button: 'OPEN', // Text for the install button
 		buttonInstall: 'INSTALL',
-		deepLink: null,
+		deepDomains: ["saas.docuware.com", "docuware-online.de", "docuware-online.com"],
+		deepLink: "https://saas.docuware.com/iosuniversal/",
 		store: {
 			ios: 'On the App Store',
 			android: 'In Google Play',
@@ -98,17 +99,10 @@ var SmartBanner = function(options) {
 SmartBanner.prototype = {
 	constructor: SmartBanner,
 	timers: [],
-	showsInstall: false,
 	button: null,
 	clearTimers: function() {
 		this.timers.map(clearTimeout);
       this.timers = [];
-		console.log("clearing");
-
-		if(this.showsInstall) {
-			this.showsInstall = false;
-			q(".smartbanner-button-text", this.button).innerText = this.options.button;
-		}
 	},
 
 	create: function() {
@@ -130,6 +124,10 @@ SmartBanner.prototype = {
 
 		var sb = doc.createElement('div');
 		var theme = this.options.theme || this.type;
+		var buttonTitle = this.options.button;
+		if(this.isDeepDomain()) {
+			buttonTitle = this.options.buttonInstall;
+		}
 
 		sb.className = 'smartbanner' + ' smartbanner-' + theme;
 		sb.innerHTML = '<div class="smartbanner-container">' +
@@ -141,7 +139,7 @@ SmartBanner.prototype = {
 								'<span>'+inStore+'</span>' +
 							'</div>' +
 							'<a href="javascript:void(0);" class="smartbanner-button">' +
-								'<span class="smartbanner-button-text">'+this.options.button+'</span>' +
+								'<span class="smartbanner-button-text">'+buttonTitle+'</span>' +
 							'</a>' +
 						'</div>';
 
@@ -182,9 +180,7 @@ SmartBanner.prototype = {
 	install: function() {
 		this.openOrInstall();
 
-		if(this.iOSversion() < 9) {
-			this.hide();
-		}
+		this.hide();
 		cookie.set('smartbanner-installed', 'true', {
 			path: '/',
 			expires: new Date(+new Date() + this.options.daysReminder * 1000 * 60 * 60 * 24)
@@ -201,38 +197,34 @@ SmartBanner.prototype = {
 	  return -1;
   	},
 	openOrInstall: function() {
+
 		var url = this.parseUrl();
 		var appStoreUrl = this.getStoreLink();
-		if(url && !this.showsInstall) {
-			var time = new Date().getTime();
-			this.timers.push(setTimeout(function(){
-				if(this.iOSversion() < 9) {
-					if((new Date().getTime()) - time < 1000) {
-						window.top.location = appStoreUrl;
-					}
-				} else if(this.options.deepLink != null) {
-					window.location = this.deepLink + escape(url);
-				} else {
-					console.log("change button");
-					this.showsInstall = true;
-					q(".smartbanner-button-text", this.button).innerText = this.options.buttonInstall;
+		var time = new Date().getTime();
+		this.timers.push(setTimeout(function(){
+			if(this.iOSversion() < 9) {
+				if((new Date().getTime()) - time < 1000) {
+					window.top.location = appStoreUrl;
 				}
-			}.bind(this), 500));
-
-			if(this.type === 'ios') {
-				window.location = url;
-			} else {
-				var iframe = doc.createElement('iframe');
-				iframe.src = url;
-				iframe.frameborder = 0;
-				iframe.style.width = "1px";
-				iframe.style.height = "1px";
-				iframe.style.position = "absolute";
-				iframe.style.top = "-100px";
-				doc.body.appendChild(iframe);
 			}
+		}.bind(this), 500));
+
+		if(this.iOSversion() < 9) {
+			var iframe = doc.createElement('iframe');
+			iframe.src = url;
+			iframe.frameborder = 0;
+			iframe.style.width = "1px";
+			iframe.style.height = "1px";
+			iframe.style.position = "absolute";
+			iframe.style.top = "-100px";
+			doc.body.appendChild(iframe);
 		} else {
-			location.href = appStoreUrl;
+			this.clearTimers();
+			if(this.isDeepDomain()) {
+				location.href = appStoreUrl;
+			} else {
+				location.href = this.options.deepLink + "?u=" + url;
+			}
 		}
 	},
 	parseAppId: function() {
@@ -266,7 +258,25 @@ SmartBanner.prototype = {
 		}
 
 		return this.appArgument;
+	},
+	isDeepDomain: function() {
+		var host = location.host;
+		for(var i in this.options.deepDomains) {
+			if(this.options.deepDomains.hasOwnProperty(i)) {
+				if(host.toLowerCase().endsWith(this.options.deepDomains[i].toLowerCase())) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 };
+
+if (typeof String.prototype.endsWith !== 'function') {
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
+}
 
 module.exports = SmartBanner;
