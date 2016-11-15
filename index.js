@@ -203,11 +203,11 @@ SmartBanner.prototype = {
 		var time = new Date().getTime();
 		this.timers.push(setTimeout(function(){
 			if(this.iOSversion() < 9) {
-				if((new Date().getTime()) - time < 1000) {
+				if((new Date().getTime()) - time < 800) {
 					window.top.location = appStoreUrl;
 				}
 			}
-		}.bind(this), 500));
+		}.bind(this), 600));
 
 		if(this.iOSversion() < 9) {
 			var iframe = doc.createElement('iframe');
