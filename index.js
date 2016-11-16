@@ -46,7 +46,7 @@ var SmartBanner = function(options) {
 		button: 'OPEN', // Text for the install button
 		buttonInstall: 'INSTALL',
 		deepDomains: ["saas.docuware.com", "docuware-online.de", "docuware-online.com"],
-		deepLink: "https://saas.docuware.com/iosuniversal/",
+		deepLink: "https://docuware-online.com/iosuniversal/",
 		store: {
 			ios: 'On the App Store',
 			android: 'In Google Play',
