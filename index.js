@@ -100,6 +100,7 @@ SmartBanner.prototype = {
 	constructor: SmartBanner,
 	timers: [],
 	button: null,
+	buttonInstall: null,
 	clearTimers: function() {
 		this.timers.map(clearTimeout);
       this.timers = [];
@@ -138,7 +139,10 @@ SmartBanner.prototype = {
 								'<div>'+this.options.author+'</div>' +
 								'<span>'+inStore+'</span>' +
 							'</div>' +
-							'<a href="javascript:void(0);" class="smartbanner-button">' +
+							'<a href="javascript:void(0);" class="smartbanner-button smartbanner-button-install">' +
+								'<span class="smartbanner-button-text">'+this.options.buttonInstall+'</span>' +
+							'</a>' +
+							'<a href="javascript:void(0);" class="smartbanner-button smartbanner-button-open">' +
 								'<span class="smartbanner-button-text">'+buttonTitle+'</span>' +
 							'</a>' +
 						'</div>';
@@ -153,8 +157,14 @@ SmartBanner.prototype = {
 			});
 		}
 
-		this.button = q('.smartbanner-button', sb);
+		this.button = q('.smartbanner-button-open', sb);
+		this.buttonInstall = q(".smartbanner-button-install", sb);
 
+		if(!this.isSamsung()) {
+			this.buttonInstall.remove();
+		}
+
+		this.buttonInstall.addEventListener('click', this.forceInstall.bind(this), false);
 		this.button.addEventListener('click', this.install.bind(this), false);
 		q('.smartbanner-close', sb).addEventListener('click', this.close.bind(this), false);
 
@@ -181,6 +191,10 @@ SmartBanner.prototype = {
 			expires: new Date(+new Date() + this.options.daysHidden * 1000 * 60 * 60 * 24)
 		});
 	},
+	forceInstall: function() {
+		var appStoreUrl = this.getStoreLink();
+		location.href = appStoreUrl;
+	},
 	install: function() {
 		this.openOrInstall();
 
@@ -201,7 +215,6 @@ SmartBanner.prototype = {
 	  return -1;
   	},
 	openOrInstall: function() {
-
 		var url = this.parseUrl();
 		var appStoreUrl = this.getStoreLink();
 		var time = new Date().getTime();
@@ -214,14 +227,18 @@ SmartBanner.prototype = {
 		}.bind(this), 600));
 
 		if(this.iOSversion() < 9) {
-			var iframe = doc.createElement('iframe');
-			iframe.src = url;
-			iframe.frameborder = 0;
-			iframe.style.width = "1px";
-			iframe.style.height = "1px";
-			iframe.style.position = "absolute";
-			iframe.style.top = "-100px";
-			doc.body.appendChild(iframe);
+			if(this.isSamsung()) {
+				location.href = url;
+			} else {
+				var iframe = doc.createElement('iframe');
+				iframe.src = url;
+				iframe.frameborder = 0;
+				iframe.style.width = "1px";
+				iframe.style.height = "1px";
+				iframe.style.position = "absolute";
+				iframe.style.top = "-100px";
+				doc.body.appendChild(iframe);
+			}
 		} else {
 			this.clearTimers();
 			if(this.isDeepDomain()) {
@@ -274,6 +291,9 @@ SmartBanner.prototype = {
 		}
 
 		return false;
+	},
+	isSamsung: function() {
+		return /Samsung/.test(navigator.userAgent);
 	}
 };
 

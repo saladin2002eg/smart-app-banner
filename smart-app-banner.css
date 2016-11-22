@@ -87,6 +87,11 @@
 	text-decoration: none;
 }
 
+.smartbanner-button-install {
+	right: 18%;
+	margin-right: 1.5em;
+}
+
 .smartbanner-button:active, .smartbanner-button:hover {
 	color: #aaa;
 }
