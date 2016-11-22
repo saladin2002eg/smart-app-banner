@@ -163,6 +163,10 @@ SmartBanner.prototype = {
 		window.addEventListener("pagehide", this.clearTimers.bind(this));
 		window.addEventListener("blur", this.clearTimers.bind(this));
 		window.addEventListener("beforeunload", this.clearTimers.bind(this));
+		window.addEventListener("unload", this.clearTimers.bind(this));
+		document.addEventListener("visibilitychange", function(){
+			this.clearTimers();
+		}.bind(this));
 	},
 	hide: function() {
 		root.classList.remove('smartbanner-show');
