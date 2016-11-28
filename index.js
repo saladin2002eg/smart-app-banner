@@ -12,8 +12,8 @@ var userLang = userLangAttribute.slice(-2) || 'us';
 // platform dependent functionality
 var mixins = {
 	ios: {
-		appMeta: 'dw-itunes-app',
-		urlMeta: 'dw-itunes-app',
+		appMeta: 'hs-itunes-app',
+		urlMeta: 'hs-itunes-app',
 		iconRels: ['apple-touch-icon-precomposed', 'apple-touch-icon'],
 		getStoreLink: function() {
 			return 'https://itunes.apple.com/' + this.options.appStoreLanguage + '/app/id' + this.appId;
@@ -45,8 +45,8 @@ var SmartBanner = function(options) {
 		appStoreLanguage: userLang, // Language code for App Store
 		button: 'OPEN', // Text for the install button
 		buttonInstall: 'INSTALL',
-		deepDomains: ["saas.docuware.com", "docuware-online.de", "docuware-online.com"],
-		deepLink: "https://docuware-online.com/iosuniversal/",
+		deepDomains: ["hungerstation.com"],
+		deepLink: "hungerstation://?c=HU",
 		store: {
 			ios: 'On the App Store',
 			android: 'In Google Play',

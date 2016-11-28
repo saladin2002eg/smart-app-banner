@@ -23,12 +23,12 @@ Based on 'jQuery Smart Banner' by Arnold Daniels <arnold@jasny.net> https://gith
   <head>
     <title>MyPage</title>
 
-    <meta name="dw-itunes-app" content="app-id=1019193036, app-argument=dwmobile%3A//customUrl">
-    <meta name="google-play-app" content="app-id=com.docuware.mobile, app-argument=dwmobile%3A//customUrl">
+    <meta name="hs-itunes-app" content="app-id=1019193036, app-argument=hsmobile%3A//customUrl">
+    <meta name="google-play-app" content="app-id=com.docuware.mobile, app-argument=hsmobile%3A//customUrl">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta name="msApplication-ID" content="bc2c5350-67b8-497c-a5ef-68f28f70d3d1"/>
-    <meta name="msApplication-URL" content="dwmobile%3A//customUrl"/>
+    <meta name="msApplication-URL" content="hsmobile%3A//customUrl"/>
 
     <link rel="stylesheet" href="node_modules/smart-app-banner/smart-app-banner.css" type="text/css" media="screen">
     <link rel="windows-touch-icon" href="windows-icon.png" />
@@ -42,12 +42,12 @@ Based on 'jQuery Smart Banner' by Arnold Daniels <arnold@jasny.net> https://gith
           daysHidden: -1,   // days to hide banner after close button is clicked (defaults to 15)
           daysReminder: -1, // days to hide banner after "VIEW" button is clicked (defaults to 90)
           appStoreLanguage: 'us', // language code for the App Store (defaults to user's browser language)
-          title: 'DocuWare Mobile',
-          author: 'DocuWare',
+          title: 'Hungerstation Mobile',
+          author: 'Hungerstation',
           button: 'Open',
           store: {
               android: 'In Google Play',
-              windows: 'In Windows store'
+              ios: 'In Windows store'
           },
           price: {
               android: 'Free',
@@ -63,7 +63,7 @@ Based on 'jQuery Smart Banner' by Arnold Daniels <arnold@jasny.net> https://gith
 
 If you want to implement custom URL-Integration, just add the attribute app-argument to the platform-meta-tag. Keep in mind to escape the URL-sequence.
 ```html
-    <meta name="dw-itunes-app" content="app-id=502838820, app-argument=myscheme%3A//customUrl">
+    <meta name="hs-itunes-app" content="app-id=502838820, app-argument=myscheme%3A//customUrl">
     <meta name="google-play-app" content="app-id=ru.hh.android, app-argument=myscheme%3A//customUrl">
     <meta name="msApplication-URL" content="myscheme%3A//customUrl">
 ```
