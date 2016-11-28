@@ -46,7 +46,7 @@ var SmartBanner = function(options) {
 		button: 'OPEN', // Text for the install button
 		buttonInstall: 'INSTALL',
 		deepDomains: ["hungerstation.com"],
-		deepLink: "hungerstation://?c=HU",
+		deepLink: "hungerstation://",
 		store: {
 			ios: 'On the App Store',
 			android: 'In Google Play',
@@ -244,7 +244,7 @@ SmartBanner.prototype = {
 			if(this.isDeepDomain()) {
 				location.href = appStoreUrl;
 			} else {
-				location.href = this.options.deepLink + "?u=" + url;
+				location.href = this.options.deepLink + "?" + url;
 			}
 		}
 	},
